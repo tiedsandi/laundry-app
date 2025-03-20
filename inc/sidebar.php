@@ -3,9 +3,9 @@ $role = $_SESSION['role'];
 
 // Atur akses halaman berdasarkan role
 $allowedPages = [
-    'Administrator' => ['page_user.php', 'page_level.php', 'page_type-services.php','transaksi-laundry.php','transaksi-pengembalian.php'],
+    'Administrator' => ['page_user.php', 'page_level.php', 'page_type-services.php','transaksi.php','transaksi-pengembalian.php'],
     'Pimpinan' => [''],
-    'Operator' => ['transaksi-laundry.php','transaksi-pengembalian.php'],
+    'Operator' => ['transaksi.php','transaksi-pengembalian.php'],
 ];
 
 function canAccess($page) {
@@ -34,20 +34,11 @@ function canAccess($page) {
             </li>
         <?php endif; ?>
 
-        <?php if (canAccess('transaksi-laundry.php')) : ?>
+        <?php if (canAccess('transaksi.php')) : ?>
             <li class="nav-item">
-                <a class="nav-link collapsed" href="transaksi-laundry.php">
+                <a class="nav-link collapsed" href="page_transaksi.php">
                     <i class="bi bi-person"></i>
-                    <span>Transaksi Laundry</span>
-                </a>
-            </li>
-        <?php endif; ?>
-
-        <?php if (canAccess('transaksi-pengembalian.php')) : ?>
-            <li class="nav-item">
-                <a class="nav-link collapsed" href="transaksi-pengembalian.php">
-                    <i class="bi bi-person"></i>
-                    <span>Transaksi Pengembalian</span>
+                    <span>Transaksi</span>
                 </a>
             </li>
         <?php endif; ?>
