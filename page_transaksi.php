@@ -3,17 +3,6 @@
     include 'inc/middleware.php';
     checkRole(['Administrator']);
 
-    // get data table
-    $typeQuery = mysqli_query($conn, "
-                    SELECT * FROM type_of_service 
-                    ORDER BY 
-                        (deleted_at IS NOT NULL AND deleted_at != '0000-00-00 00:00:00') ASC,
-                        id DESC,
-                        service_name ASC
-                ");
-
-    $rows = mysqli_fetch_all($typeQuery, MYSQLI_ASSOC);
-
     if (isset($_GET['delete'])) {
         $id = $_GET['delete'];
         $currentTime = date('Y-m-d H:i:s', strtotime('+6 hours'));  
@@ -69,15 +58,14 @@
         <div class="pagetitle">  
             <nav class="nav mb-4 d-flex  gap-4">
                 <a class="btn 
-                    <?= (empty($_GET['page']) || $_GET['page'] === "trans-laundry") ? "btn-primary" : "btn-secondary"?> btn-primary" href="page_transaksi.php?page=trans-laundry">
+                    <?= (empty($_GET['page']) || $_GET['page'] === "trans-laundry") ? "btn-primary" : "btn-secondary"?> btn-primary" href="?page=trans-laundry">
                     Transaksi Laundry
                 </a>
                 <a class="btn 
-                    <?= (isset($_GET['page']) && $_GET['page'] === "trans-pengembalian") ? "btn-primary" : "btn-secondary"?>" href="page_transaksi.php?page=trans-pengembalian">
+                    <?= (isset($_GET['page']) && $_GET['page'] === "trans-pengembalian") ? "btn-primary" : "btn-secondary"?>" href="?page=trans-pengembalian">
                     Transaksi Pengembalian
                 </a>
             </nav>
-
 
             <h1>
                 <?= (isset($_GET['page']) && $_GET['page']=== 'trans-laundry' || empty($_GET['page'])) ? "Transaksi Laundry" : "Transaksi Pengembalian" ?>
@@ -123,13 +111,47 @@
 
     <!-- Template Main JS File -->
     <script src="assets/js/main.js"></script>
+    <script src="assets/js/jquery-3.7.1.min.js"></script>
+
     <script src="https://cdn.datatables.net/v/bs5/dt-2.2.2/datatables.min.js" integrity="sha384-k90VzuFAoyBG5No1d5yn30abqlaxr9+LfAPp6pjrd7U3T77blpvmsS8GqS70xcnH" crossorigin="anonymous"></script>
     
-    <script src="https://code.jquery.com/jquery-3.4.1.slim.min.js" integrity="sha384-J6qa4849blE2+poT4WnyKhv5vZF5SrPo0iEjwBvKU7imGFAV0wwj1yYfoRSJoZ+n" crossorigin="anonymous"></script>
+    
 
     <script>
+
+        $('#id_service').change(function() {
+            let id_service = $(this).val();
+            $.ajax({
+                url: 'inc/ajax/get-service.php?id_service=' + id_service,
+                method: 'get',
+                dataType: 'json',
+                success: function(response) {
+                    // console.log(response);
+                    $('#service_price').val(response.data.price);
+                }
+            });
+        });
+
         $('.add-row') .click(function() {
-        alert('testing');
+            let service_name = $('#id_service').find('option:selected').text();
+            let service_price = $('#service_price').val();
+            let newRow = "";
+            newRow += "<tr>";
+            newRow += `<td>${service_name}</td>`;
+            newRow += `<td>${service_price.toLocaleString()}</td>`;
+            newRow += "<td><input class='form-control' name='qty[]' type='number'</td>";
+            newRow += "<td><input class='form-control' name='notes[]' type='text'</td>";
+            newRow += "<td><button class='btn btn-success btn-sm remove'>Remove</button></td>";
+            newRow += "</tr>";
+
+            $('.table-order tbody').append(newRow);
+
+            $('.remove').click(function(event){
+                event.preventDefault();
+                // $(this).parent().parent().remove();
+                $(this).closest('tr').remove();
+            });
+            
         });
     </script>
 
